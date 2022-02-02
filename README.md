@@ -1,11 +1,21 @@
 # react-input-otc
 
 
-```shell
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/flavioespinoza/react-input-otc.git
-git push -u origin main
+## Usage
+
+```js
+import React from 'react';
+import InputOneTimeCode from './components/InputOneTimeCode';
+
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <InputOneTimeCode codeLength={6} />
+    </div>
+  );
+}
+
+export default App;
 ```
