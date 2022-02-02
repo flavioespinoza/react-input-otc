@@ -1,5 +1,6 @@
 # react-input-otc
 
+One Time Input for verification codes.
 
 ## Usage
 
@@ -19,3 +20,7 @@ function App() {
 
 export default App;
 ```
+
+## Screenshot
+
+![src/assets/img/react-input-otc.png](src/assets/img/react-input-otc.png)
