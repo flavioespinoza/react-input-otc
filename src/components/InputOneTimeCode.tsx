@@ -1,56 +1,77 @@
 import React from 'react';
 
 interface InputOneTimeCodeProps {
-  codeLength: number
+  codeLength: number;
 }
 
-export default function InputOneTimeCode(props: InputOneTimeCodeProps) {  
+export default function InputOneTimeCode(props: InputOneTimeCodeProps) {
   const { codeLength } = props;
-  const [code, setCode] = React.useState<string[]>(
-    Array.from({ length: codeLength }, (e, i) => "")
-  ); // ["", "", "", ""]
-  const inputRefs = React.useRef(code.map(() => React.createRef<HTMLInputElement>()));
 
-  const handleKeyDown = React.useCallback((keyCode: number, i: number) => {
+  const [code, setCode] = React.useState(
+    Array.from({ length: codeLength }, (e, i) => '')
+  );
 
-    // switch
+  const inputRefs = React.useRef(
+    code.map(() => React.createRef<HTMLInputElement>())
+  );
 
-    // backspace
+  const handleFocus = (i: number) => {
+    setCode((prevCode) => {
+      const tempCode = [...prevCode];
+      tempCode[i] = '';
+      return tempCode;
+    });
+  }
 
-    // delete
+  const handleKeyUp = (key: string, i: number) => {
+    if (key === 'Backspace' || key === 'Delete') {
+      const tempCode = [...code];
+      tempCode[i - 1] = '';
+      setCode(tempCode);
+      inputRefs.current?.[i - 1]?.current?.focus();
+    }
+  }
 
-    // arrow left
+  const handleChange = (char: string, i: number) => {
+    const isValidChar = true;
+    if (isValidChar) {
+      const tempCode = [...code];
+      tempCode.splice(i, 1, char);
+      setCode(tempCode);
+    }
+    if (isValidChar && i < codeLength - 1) {
+      inputRefs.current?.[i + 1]?.current?.focus();
+    } else if (isValidChar) {
+      inputRefs.current?.[i]?.current?.blur();
+    }
+  }
 
-    // arrow right
-
-    // default
-
-  }, []);
-
-  const handlePaste = React.useCallback((clipboardData: any) => {
-    setCode(clipboardData.getData('Text').split(''));
-  }, []);
-
-  const inputs = inputRefs.current.map((item, i) => {
-    return (
-      <input
-        key={i}
-        onPaste={(e) => {
-          handlePaste(e.clipboardData);
-          e.stopPropagation();
-          item.current?.blur();
-        }}
-        ref={inputRefs.current[i]}
-        tabIndex={i}
-
-
-      />
-    );
-  });
+  const handlePaste = (clipboardData: any) => {
+    const tempCode = clipboardData.getData('Text').split('')
+    setCode(tempCode);
+  }
 
   return (
     <div>
-      <span className={'flex-span'}>{inputs}</span>
+      {inputRefs.current.map((item, i) => {
+        return (
+          <input
+            key={i}
+            className={'input-otc'}
+            onPaste={(e) => {
+              handlePaste(e.clipboardData);
+              e.stopPropagation();
+              item.current?.blur();
+            }}
+            ref={inputRefs.current[i]}
+            tabIndex={i}
+            onFocus={(e) => handleFocus(i)}
+            onKeyUp={(e) => handleKeyUp(e.key, i)}
+            onChange={(e) => handleChange(e.target.value, i)}
+            value={code[i]}
+          />
+        );
+      })}
     </div>
   );
 }
